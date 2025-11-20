@@ -17,6 +17,7 @@ cloud "Cloud Platform" {
     [Order Service] as order
     [Payment Service] as payment
     [Notification Service] as notify
+    [Test Service] as test
   }
   
   package "Data Layer" {
