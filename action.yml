@@ -1,0 +1,40 @@
+name: 'PlantUML Diagram Generator'
+description: 'Automatically generates diagram images from PlantUML code blocks in markdown files and standalone .puml/.plantuml files'
+author: 'Constantin Titarenko'
+
+branding:
+  icon: 'image'
+  color: 'blue'
+
+inputs:
+  source-path:
+    description: 'Path to search for markdown and PlantUML files (default: current directory)'
+    required: false
+    default: '.'
+  output-path:
+    description: 'Directory to save generated diagrams'
+    required: false
+    default: 'diagrams'
+  format:
+    description: 'Output format for diagrams (png, svg, or both)'
+    required: false
+    default: 'svg'
+  plantuml-version:
+    description: 'PlantUML version to use'
+    required: false
+    default: 'latest'
+
+outputs:
+  diagrams-generated:
+    description: 'Number of diagrams generated'
+  diagram-paths:
+    description: 'Comma-separated list of generated diagram paths'
+
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.source-path }}
+    - ${{ inputs.output-path }}
+    - ${{ inputs.format }}
+    - ${{ inputs.plantuml-version }}

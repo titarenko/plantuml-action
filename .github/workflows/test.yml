@@ -1,0 +1,63 @@
+name: Test PlantUML Action
+
+on:
+  push:
+    paths:
+      - '**.md'
+      - '**.markdown'
+      - '**.puml'
+      - '**.plantuml'
+  pull_request:
+    paths:
+      - '**.md'
+      - '**.markdown'
+      - '**.puml'
+      - '**.plantuml'
+
+jobs:
+  generate-diagrams:
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate PlantUML diagrams
+        id: plantuml
+        uses: ./
+        with:
+          source-path: '.'
+          output-path: 'diagrams'
+          format: 'png'
+
+      - name: Display results
+        run: |
+          echo "Diagrams generated: ${{ steps.plantuml.outputs.diagrams-generated }}"
+          echo "Diagram paths: ${{ steps.plantuml.outputs.diagram-paths }}"
+          
+      - name: List generated files
+        run: |
+          if [ -d "diagrams" ]; then
+            echo "Generated diagram files:"
+            ls -lh diagrams/
+          else
+            echo "No diagrams directory found"
+          fi
+
+      - name: Commit generated diagrams
+        if: github.event_name == 'push'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add diagrams/
+          if ! git diff --quiet --staged; then
+            git commit -m "🎨 Update PlantUML diagrams [skip ci]"
+            git push
+          else
+            echo "No changes to commit"
+          fi

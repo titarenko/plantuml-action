@@ -1,0 +1,16 @@
+@startuml
+title User Authentication Flow
+
+actor User
+participant "Web App" as Web
+participant "Auth Service" as Auth
+database "User DB" as DB
+
+User -> Web: Enter credentials
+Web -> Auth: POST /login
+Auth -> DB: Query user
+DB --> Auth: User data
+Auth -> Auth: Verify password
+Auth --> Web: JWT token
+Web --> User: Login successful
+@enduml

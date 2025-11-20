@@ -1,0 +1,43 @@
+@startuml
+title Microservices Architecture
+
+cloud "Cloud Platform" {
+  package "Frontend" {
+    [Web UI] as web
+    [Mobile App] as mobile
+  }
+  
+  package "API Layer" {
+    [API Gateway] as gateway
+    [Load Balancer] as lb
+  }
+  
+  package "Services" {
+    [User Service] as user
+    [Order Service] as order
+    [Payment Service] as payment
+    [Notification Service] as notify
+  }
+  
+  package "Data Layer" {
+    database "User DB" as userdb
+    database "Order DB" as orderdb
+    database "Payment DB" as paydb
+    queue "Message Queue" as mq
+  }
+}
+
+web --> gateway
+mobile --> gateway
+gateway --> lb
+lb --> user
+lb --> order
+lb --> payment
+
+user --> userdb
+order --> orderdb
+payment --> paydb
+payment --> mq
+notify --> mq
+
+@enduml
