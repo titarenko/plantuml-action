@@ -3,9 +3,8 @@
 set -e
 
 SOURCE_PATH="${1:-.}"
-OUTPUT_PATH="${2:-diagrams}"
-FORMAT="${3:-png}"
-PLANTUML_VERSION="${4:-latest}"
+FORMAT="${2:-png}"
+PLANTUML_VERSION="${3:-latest}"
 
 # Colors for output
 GREEN='\033[0;32m'
@@ -16,7 +15,6 @@ NC='\033[0m' # No Color
 echo "🔍 PlantUML Diagram Generator"
 echo "================================"
 echo "Source path: $SOURCE_PATH"
-echo "Output path: $OUTPUT_PATH"
 echo "Format: $FORMAT"
 echo "Mode: Changed files only"
 echo "PlantUML version: $PLANTUML_VERSION"
@@ -55,9 +53,6 @@ if [ ! -f "/usr/local/bin/plantuml" ]; then
     echo 'java -jar /opt/plantuml.jar "$@"' >> /usr/local/bin/plantuml
     chmod +x /usr/local/bin/plantuml
 fi
-
-# Create output directory
-mkdir -p "$OUTPUT_PATH"
 
 # Counter for generated diagrams
 diagram_count=0
@@ -115,11 +110,11 @@ process_markdown_file() {
         if [[ "$line" =~ ^\`\`\`$ ]] && [ $in_plantuml -eq 1 ]; then
             in_plantuml=0
             
-            # Generate diagram filename
+            # Generate diagram filename in same directory as markdown file
             if [ $block_count -eq 1 ]; then
-                output_file="$OUTPUT_PATH/${base_name}"
+                output_file="$dir_name/${base_name}"
             else
-                output_file="$OUTPUT_PATH/${base_name}_${block_count}"
+                output_file="$dir_name/${base_name}_${block_count}"
             fi
             
             # Generate diagram(s)
@@ -146,7 +141,8 @@ process_plantuml_file() {
     local relative_path="${puml_file#./}"
     local base_name=$(basename "$puml_file")
     local file_without_ext="${base_name%.*}"
-    local output_file="$OUTPUT_PATH/${file_without_ext}"
+    local dir_name=$(dirname "$puml_file")
+    local output_file="$dir_name/${file_without_ext}"
     
     echo -e "${YELLOW}Processing:${NC} $relative_path"
     

@@ -33,7 +33,6 @@ jobs:
         uses: ./
         with:
           source-path: '.'
-          output-path: 'diagrams'
           format: 'png'
 
       - name: Display results

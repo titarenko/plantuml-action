@@ -11,10 +11,6 @@ inputs:
     description: 'Path to search for markdown and PlantUML files (default: current directory)'
     required: false
     default: '.'
-  output-path:
-    description: 'Directory to save generated diagrams'
-    required: false
-    default: 'diagrams'
   format:
     description: 'Output format for diagrams (png, svg, or both)'
     required: false
@@ -35,6 +31,5 @@ runs:
   image: 'Dockerfile'
   args:
     - ${{ inputs.source-path }}
-    - ${{ inputs.output-path }}
     - ${{ inputs.format }}
     - ${{ inputs.plantuml-version }}
