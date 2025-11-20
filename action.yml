@@ -16,7 +16,7 @@ inputs:
     required: false
     default: 'svg'
   plantuml-version:
-    description: 'PlantUML version to use'
+    description: 'PlantUML version to use (Docker image tag)'
     required: false
     default: 'latest'
 
@@ -28,8 +28,7 @@ outputs:
 
 runs:
   using: 'docker'
-  image: 'Dockerfile'
+  image: 'docker://titarenko/plantuml-action:${{ inputs.plantuml-version }}'
   args:
     - ${{ inputs.source-path }}
     - ${{ inputs.format }}
-    - ${{ inputs.plantuml-version }}

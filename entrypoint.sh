@@ -8,14 +8,16 @@ if [ -n "$GITHUB_WORKSPACE" ]; then
 fi
 
 SOURCE_PATH="${1:-.}"
-FORMAT="${2:-png}"
-PLANTUML_VERSION="${3:-latest}"
+FORMAT="${2:-svg}"
 
 # Colors for output
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
+
+# Get PlantUML version from pre-installed jar
+PLANTUML_VERSION=$(cat /opt/plantuml_version.txt 2>/dev/null || echo "unknown")
 
 echo "🔍 PlantUML Diagram Generator"
 echo "================================"
@@ -24,50 +26,6 @@ echo "Format: $FORMAT"
 echo "Mode: Changed files only"
 echo "PlantUML version: $PLANTUML_VERSION"
 echo ""
-
-# Download PlantUML if not already present or version changed
-if [ ! -f "/opt/plantuml.jar" ] || [ ! -f "/opt/plantuml_version.txt" ] || [ "$(cat /opt/plantuml_version.txt 2>/dev/null)" != "$PLANTUML_VERSION" ]; then
-    echo "Downloading PlantUML version $PLANTUML_VERSION..."
-    
-    if [ "$PLANTUML_VERSION" = "latest" ]; then
-        # Get the latest release version from GitHub API
-        LATEST_VERSION=$(curl -s https://api.github.com/repos/plantuml/plantuml/releases/latest | grep '"tag_name"' | sed -E 's/.*"v([^"]+)".*/\1/')
-        if [ -n "$LATEST_VERSION" ]; then
-            PLANTUML_VERSION="$LATEST_VERSION"
-            echo "Latest version is: $PLANTUML_VERSION"
-        else
-            PLANTUML_VERSION="1.2024.7"
-            echo -e "${YELLOW}Warning: Could not determine latest version, using ${PLANTUML_VERSION}${NC}"
-        fi
-    fi
-    
-    # Download PlantUML jar
-    DOWNLOAD_URL="https://github.com/plantuml/plantuml/releases/download/v${PLANTUML_VERSION}/plantuml-${PLANTUML_VERSION}.jar"
-    echo "Downloading from: $DOWNLOAD_URL"
-    
-    if ! curl -L -f "$DOWNLOAD_URL" -o /opt/plantuml.jar; then
-        echo -e "${RED}Error: Failed to download PlantUML from $DOWNLOAD_URL${NC}"
-        exit 1
-    fi
-    
-    # Verify the jar file
-    if ! java -jar /opt/plantuml.jar -version >/dev/null 2>&1; then
-        echo -e "${RED}Error: Downloaded PlantUML jar is invalid or corrupt${NC}"
-        rm -f /opt/plantuml.jar
-        exit 1
-    fi
-    
-    echo "$PLANTUML_VERSION" > /opt/plantuml_version.txt
-    echo -e "${GREEN}✓ PlantUML downloaded successfully${NC}"
-    echo ""
-fi
-
-# Create plantuml wrapper if not exists
-if [ ! -f "/usr/local/bin/plantuml" ]; then
-    echo '#!/bin/bash' > /usr/local/bin/plantuml
-    echo 'java -jar /opt/plantuml.jar "$@"' >> /usr/local/bin/plantuml
-    chmod +x /usr/local/bin/plantuml
-fi
 
 # Counter for generated diagrams
 diagram_count=0
