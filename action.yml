@@ -15,10 +15,6 @@ inputs:
     description: 'Output format for diagrams (png, svg, or both)'
     required: false
     default: 'svg'
-  plantuml-version:
-    description: 'PlantUML version to use (Docker image tag)'
-    required: false
-    default: 'latest'
 
 outputs:
   diagrams-generated:
@@ -28,7 +24,7 @@ outputs:
 
 runs:
   using: 'docker'
-  image: 'docker://titarenko/plantuml-action:${{ inputs.plantuml-version }}'
+  image: 'docker://titarenko/plantuml-action:latest'
   args:
     - ${{ inputs.source-path }}
     - ${{ inputs.format }}

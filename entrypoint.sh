@@ -23,7 +23,6 @@ echo "🔍 PlantUML Diagram Generator"
 echo "================================"
 echo "Source path: $SOURCE_PATH"
 echo "Format: $FORMAT"
-echo "Mode: Changed files only"
 echo "PlantUML version: $PLANTUML_VERSION"
 echo ""
 
