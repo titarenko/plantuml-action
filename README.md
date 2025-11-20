@@ -45,7 +45,8 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add '*.png' '*.svg'
+          git add '*png' || true
+          git add '*svg' || true
           git diff --quiet && git diff --staged --quiet || git commit -m "Update PlantUML diagrams"
           git push
 ```
