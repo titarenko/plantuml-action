@@ -40,21 +40,12 @@ jobs:
           echo "Diagrams generated: ${{ steps.plantuml.outputs.diagrams-generated }}"
           echo "Diagram paths: ${{ steps.plantuml.outputs.diagram-paths }}"
           
-      - name: List generated files
-        run: |
-          if [ -d "diagrams" ]; then
-            echo "Generated diagram files:"
-            ls -lh diagrams/
-          else
-            echo "No diagrams directory found"
-          fi
-
       - name: Commit generated diagrams
         if: github.event_name == 'push'
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add diagrams/
+          git add '*.png' '*.svg'
           if ! git diff --quiet --staged; then
             git commit -m "🎨 Update PlantUML diagrams [skip ci]"
             git push
