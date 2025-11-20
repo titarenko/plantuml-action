@@ -36,11 +36,21 @@ if [ ! -f "/opt/plantuml.jar" ] || [ ! -f "/opt/plantuml_version.txt" ] || [ "$(
         fi
     fi
     
-    curl -L "https://github.com/plantuml/plantuml/releases/download/v${PLANTUML_VERSION}/plantuml-${PLANTUML_VERSION}.jar" \
-        -o /opt/plantuml.jar || {
-        echo -e "${RED}Error: Failed to download PlantUML${NC}"
+    # Download PlantUML jar
+    DOWNLOAD_URL="https://github.com/plantuml/plantuml/releases/download/v${PLANTUML_VERSION}/plantuml-${PLANTUML_VERSION}.jar"
+    echo "Downloading from: $DOWNLOAD_URL"
+    
+    if ! curl -L -f "$DOWNLOAD_URL" -o /opt/plantuml.jar; then
+        echo -e "${RED}Error: Failed to download PlantUML from $DOWNLOAD_URL${NC}"
         exit 1
-    }
+    fi
+    
+    # Verify the jar file
+    if ! java -jar /opt/plantuml.jar -version >/dev/null 2>&1; then
+        echo -e "${RED}Error: Downloaded PlantUML jar is invalid or corrupt${NC}"
+        rm -f /opt/plantuml.jar
+        exit 1
+    fi
     
     echo "$PLANTUML_VERSION" > /opt/plantuml_version.txt
     echo -e "${GREEN}✓ PlantUML downloaded successfully${NC}"
