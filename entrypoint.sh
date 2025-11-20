@@ -2,6 +2,11 @@
 
 set -e
 
+# Change to GitHub workspace if running in GitHub Actions
+if [ -n "$GITHUB_WORKSPACE" ]; then
+    cd "$GITHUB_WORKSPACE"
+fi
+
 SOURCE_PATH="${1:-.}"
 FORMAT="${2:-png}"
 PLANTUML_VERSION="${3:-latest}"
@@ -169,10 +174,11 @@ fi
 
 # Process markdown files
 if [ -z "$changed_files" ]; then
-    echo "No git repository found, searching for all markdown files in $SOURCE_PATH..."
-    changed_files=$(find "$SOURCE_PATH" -type f \( -name "*.md" -o -name "*.markdown" \) 2>/dev/null)
+    echo "No git repository found, searching for all markdown files in $SOURCE_PATH"
+    md_files_list=$(find "$SOURCE_PATH" -type f \( -name "*.md" -o -name "*.markdown" \) 2>/dev/null)
 else
     echo "Processing changed markdown files..."
+    md_files_list="$changed_files"
 fi
 echo ""
 
@@ -183,14 +189,15 @@ while IFS= read -r file; do
         process_markdown_file "$file"
         echo ""
     fi
-done <<< "$changed_files"
+done <<< "$md_files_list"
 
 # Process standalone PlantUML files
 if [ -z "$changed_files" ]; then
-    echo "No git repository found, searching for all PlantUML files in $SOURCE_PATH..."
-    changed_files=$(find "$SOURCE_PATH" -type f \( -name "*.puml" -o -name "*.plantuml" \) 2>/dev/null)
+    echo "No git repository found, searching for all PlantUML files in $SOURCE_PATH"
+    puml_files_list=$(find "$SOURCE_PATH" -type f \( -name "*.puml" -o -name "*.plantuml" \) 2>/dev/null)
 else
     echo "Processing changed PlantUML files..."
+    puml_files_list="$changed_files"
 fi
 echo ""
 
@@ -201,7 +208,7 @@ while IFS= read -r file; do
         process_plantuml_file "$file"
         echo ""
     fi
-done <<< "$changed_files"
+done <<< "$puml_files_list"
 
 # Output results
 echo "================================"
